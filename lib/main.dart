@@ -1,5 +1,8 @@
-// main.dart
 import 'package:flutter/material.dart';
+import 'pages/home_page.dart';
+import 'pages/devices_page.dart';
+import 'pages/energy_page.dart';
+import 'pages/settings_page.dart';
 
 void main() {
   runApp(SmartHomeApp());
@@ -34,9 +37,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
+  final List<Widget> _pages = [
+    HomePage(),
+    DevicesPage(),
+    EnergyPage(),
+    SettingsPage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Color(0xFF16213E),
