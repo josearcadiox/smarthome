@@ -1,9 +1,27 @@
 import 'package:flutter/material.dart';
 import '../models/device.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late List<Device> _devices;
+
+  @override
+  void initState() {
+    super.initState();
+    _devices = List.from(devices); // Copia local para manejar estado
+  }
+
   @override
   Widget build(BuildContext context) {
+    int activeDevices = _devices.where((d) => d.isOn).length;
+    double totalConsumption = _devices
+        .where((d) => d.isOn)
+        .fold(0.0, (sum, d) => sum + d.powerConsumption);
+
     return Scaffold(
       backgroundColor: Color(0xFF1A1A2E),
       body: SafeArea(
@@ -14,7 +32,7 @@ class HomePage extends StatelessWidget {
             children: [
               _buildHeader(),
               SizedBox(height: 24),
-              _buildQuickStats(),
+              _buildQuickStats(activeDevices, totalConsumption),
               SizedBox(height: 24),
               _buildRecentDevices(),
             ],
@@ -53,13 +71,13 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickStats() {
+  Widget _buildQuickStats(int activeDevices, double totalConsumption) {
     return Row(
       children: [
         Expanded(
           child: _buildStatCard(
             title: 'Dispositivos Activos',
-            value: '3',
+            value: '$activeDevices',
             icon: Icons.devices,
             color: Color(0xFF3282B8),
           ),
@@ -68,7 +86,7 @@ class HomePage extends StatelessWidget {
         Expanded(
           child: _buildStatCard(
             title: 'Consumo Actual',
-            value: '127W',
+            value: '${totalConsumption.toStringAsFixed(0)}W',
             icon: Icons.flash_on,
             color: Color(0xFF0F4C75),
           ),
@@ -121,7 +139,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
         SizedBox(height: 12),
-        ...devices.take(3).map((device) => _buildDeviceCard(device)).toList(),
+        ..._devices.take(3).map((device) => _buildDeviceCard(device)).toList(),
       ],
     );
   }
@@ -167,7 +185,9 @@ class HomePage extends StatelessWidget {
           Switch(
             value: device.isOn,
             onChanged: (value) {
-              // Aquí puedes agregar la lógica para cambiar el estado
+              setState(() {
+                device.isOn = value;
+              });
             },
             activeColor: Color(0xFF3282B8),
           ),

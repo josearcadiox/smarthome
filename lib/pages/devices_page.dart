@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import '../models/device.dart';
 
-class DevicesPage extends StatelessWidget {
+class DevicesPage extends StatefulWidget {
+  @override
+  _DevicesPageState createState() => _DevicesPageState();
+}
+
+class _DevicesPageState extends State<DevicesPage> {
+  late List<Device> _deviceList;
+
+  @override
+  void initState() {
+    super.initState();
+    _deviceList = List.from(devices);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,9 +36,9 @@ class DevicesPage extends StatelessWidget {
               SizedBox(height: 24),
               Expanded(
                 child: ListView.builder(
-                  itemCount: devices.length,
+                  itemCount: _deviceList.length,
                   itemBuilder: (context, index) {
-                    return _buildDeviceCard(devices[index]);
+                    return _buildDeviceCard(_deviceList[index], index);
                   },
                 ),
               ),
@@ -36,7 +49,7 @@ class DevicesPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDeviceCard(Device device) {
+  Widget _buildDeviceCard(Device device, int index) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(20),
@@ -79,7 +92,9 @@ class DevicesPage extends StatelessWidget {
               Switch(
                 value: device.isOn,
                 onChanged: (value) {
-                  // Aquí puedes agregar la lógica para cambiar el estado
+                  setState(() {
+                    _deviceList[index].isOn = value;
+                  });
                 },
                 activeColor: Color(0xFF3282B8),
               ),
